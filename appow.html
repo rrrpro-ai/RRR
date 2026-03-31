@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RRR PRO MEX - REAL DOWNLOADER</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .core-box {
+            background: #0a0a0a;
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 { color: #ff0000; text-shadow: 2px 2px 5px #ff0000; }
+        input {
+            width: 80%; padding: 15px; margin: 20px 0;
+            background: #000; color: #fff;
+            border: 1px solid #ff0000; outline: none;
+            font-size: 16px;
+        }
+        button {
+            background: #8b0000; color: #fff; font-weight: bold;
+            padding: 15px 30px; border: 1px solid #ff0000;
+            cursor: pointer; font-size: 16px; text-transform: uppercase;
+            transition: 0.3s;
+        }
+        button:hover { background: #ff0000; box-shadow: 0 0 15px #ff0000; }
+        #status { margin-top: 20px; font-size: 14px; color: #00ff00; }
+        .real-link {
+            display: none; margin-top: 20px; background: #00ff00;
+            color: #000; padding: 15px; text-decoration: none;
+            font-weight: bold; border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="core-box">
+        <h1>RRR PRO MEX</h1>
+        <p>UNIVERSAL REAL LINK EXTRACTOR</p>
+        
+        <input type="text" id="targetUrl" placeholder="Paste ANY link (YouTube, TikTok, FB)...">
+        <br>
+        <button onclick="getRealLink()" id="btn">Extract Original Link</button>
+        
+        <div id="status"></div>
+        <a id="downloadBtn" class="real-link" href="#" target="_blank" download>CLICK HERE TO DOWNLOAD DIRECTLY</a>
+    </div>
+
+    <script>
+        async function getRealLink() {
+            const url = document.getElementById('targetUrl').value;
+            const statusBox = document.getElementById('status');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const btn = document.getElementById('btn');
+
+            if(!url) { statusBox.innerText = "Error: Input is empty!"; statusBox.style.color = "red"; return; }
+
+            statusBox.style.color = "yellow";
+            statusBox.innerText = "Bypassing Security & Extracting Real Link...";
+            btn.disabled = true;
+            downloadBtn.style.display = "none";
+
+            try {
+                // பைத்தான் சர்வருக்கு லிங்கை அனுப்புகிறது (Localhost Port 5000)
+                const response = await fetch('http://127.0.0.1:5000/extract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if(data.success) {
+                    statusBox.style.color = "#00ff00";
+                    statusBox.innerText = "SUCCESS: " + data.title;
+                    
+                    downloadBtn.href = data.direct_link; // THE REAL DIRECT URL
+                    downloadBtn.style.display = "inline-block";
+                } else {
+                    statusBox.style.color = "red";
+                    statusBox.innerText = "EXTRACTION FAILED: " + data.error;
+                }
+            } catch (error) {
+                statusBox.style.color = "red";
+                statusBox.innerText = "SERVER ERROR: Is the Python Omega Server running?";
+            }
+
+            btn.disabled = false;
+        }
+    </script>
+
+</body>
+</html>
